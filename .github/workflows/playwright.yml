@@ -1,0 +1,41 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      STANDARD_USER: ${{ secrets.STANDARD_USER }}
+      LOCKED_USER: ${{ secrets.LOCKED_USER }}
+      PROBLEM_USER: ${{ secrets.PROBLEM_USER }}
+      PERFORMANCE_USER: ${{ secrets.PERFORMANCE_USER }}
+      ERROR_USER: ${{ secrets.ERROR_USER }}
+      VISUAL_USER: ${{ secrets.VISUAL_USER }}
+      SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Playwright tests
+        run: npm test
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
