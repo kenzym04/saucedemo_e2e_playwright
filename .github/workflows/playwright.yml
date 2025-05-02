@@ -9,7 +9,18 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
+    env:
+      STANDARD_USER: ${{ secrets.STANDARD_USER }}
+      LOCKED_USER: ${{ secrets.LOCKED_USER }}
+      PROBLEM_USER: ${{ secrets.PROBLEM_USER }}
+      PERFORMANCE_USER: ${{ secrets.PERFORMANCE_USER }}
+      ERROR_USER: ${{ secrets.ERROR_USER }}
+      VISUAL_USER: ${{ secrets.VISUAL_USER }}
+      SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
+      SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+      RESPONSE_TIME_THRESHOLD: ${{ secrets.RESPONSE_TIME_THRESHOLD }}
+      
     steps:
       - uses: actions/checkout@v4
       
@@ -33,16 +44,7 @@ jobs:
           done
 
       - name: Run Playwright tests
-        env:
-          STANDARD_USER: ${{ secrets.STANDARD_USER }}
-          LOCKED_USER: ${{ secrets.LOCKED_USER }}
-          PROBLEM_USER: ${{ secrets.PROBLEM_USER }}
-          PERFORMANCE_USER: ${{ secrets.PERFORMANCE_USER }}
-          ERROR_USER: ${{ secrets.ERROR_USER }}
-          VISUAL_USER: ${{ secrets.VISUAL_USER }}
-          SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
-          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-          RESPONSE_TIME_THRESHOLD: ${{ secrets.RESPONSE_TIME_THRESHOLD }}
+       
         run: npm test
       
       - name: Upload Playwright HTML report
