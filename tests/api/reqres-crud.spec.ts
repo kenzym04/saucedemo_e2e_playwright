@@ -52,26 +52,30 @@ const RESPONSE_TIME_THRESHOLD = process.env.RESPONSE_TIME_THRESHOLD
   ? Number(process.env.RESPONSE_TIME_THRESHOLD)
   : 2000; // Default to 2000ms
 
+const API_HEADERS = {
+  'x-api-key': 'reqres-free-v1'
+};
+
 test.describe('Reqres.in CRUD API Tests', () => {
   let userId: string | number;
 
   test('POST /api/users - Create User', async ({ request }) => {
     const start = Date.now();
     const response = await request.post('https://reqres.in/api/users', {
+      headers: API_HEADERS,
       data: { name: 'John', job: 'QA' },
     });
     const duration = Date.now() - start;
 
     expect(response.status()).toBe(201);
     expect(response.headers()['content-type']).toContain('application/json');
-    expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD); // Performance: <2s
+    expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
 
     const body = await response.json();
     expect(body).toHaveProperty('id');
     expect(typeof body.name).toBe('string');
     expect(typeof body.job).toBe('string');
 
-    // Schema validation
     const valid = ajv.validate(userSchema, body);
     expect(valid, ajv.errorsText()).toBe(true);
 
@@ -80,7 +84,9 @@ test.describe('Reqres.in CRUD API Tests', () => {
 
   test('GET /api/users/:id - Get User', async ({ request }) => {
     const start = Date.now();
-    const response = await request.get('https://reqres.in/api/users/2');
+    const response = await request.get('https://reqres.in/api/users/2', {
+      headers: API_HEADERS
+    });
     const duration = Date.now() - start;
 
     expect(response.status()).toBe(200);
@@ -88,7 +94,6 @@ test.describe('Reqres.in CRUD API Tests', () => {
     expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
 
     const body = await response.json();
-    // Schema validation
     const valid = ajv.validate(getUserSchema, body);
     expect(valid, ajv.errorsText()).toBe(true);
 
@@ -101,6 +106,7 @@ test.describe('Reqres.in CRUD API Tests', () => {
   test('PUT /api/users/:id - Update User', async ({ request }) => {
     const start = Date.now();
     const response = await request.put('https://reqres.in/api/users/2', {
+      headers: API_HEADERS,
       data: { name: 'Jane', job: 'Developer' },
     });
     const duration = Date.now() - start;
@@ -114,14 +120,15 @@ test.describe('Reqres.in CRUD API Tests', () => {
     expect(body).toHaveProperty('job', 'Developer');
     expect(typeof body.updatedAt).toBe('string');
 
-    // Schema validation
     const valid = ajv.validate(putUserSchema, body);
     expect(valid, ajv.errorsText()).toBe(true);
   });
 
   test('DELETE /api/users/:id - Delete User', async ({ request }) => {
     const start = Date.now();
-    const response = await request.delete('https://reqres.in/api/users/2');
+    const response = await request.delete('https://reqres.in/api/users/2', {
+      headers: API_HEADERS
+    });
     const duration = Date.now() - start;
 
     expect(response.status()).toBe(204);
@@ -129,66 +136,70 @@ test.describe('Reqres.in CRUD API Tests', () => {
     expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
   });
 
-  // Negative test: POST with missing fields
   test('POST /api/users - Missing Fields', async ({ request }) => {
     const response = await request.post('https://reqres.in/api/users', {
+      headers: API_HEADERS,
       data: { name: 'NoJob' },
     });
-    expect(response.status()).toBe(201); // reqres.in still creates, but job will be undefined
+    expect(response.status()).toBe(201);
     const body = await response.json();
     expect(body).toHaveProperty('name', 'NoJob');
     expect(body).not.toHaveProperty('job');
   });
 
-  // Negative test: GET non-existent user
   test('GET /api/users/9999 - Not Found', async ({ request }) => {
-    const response = await request.get('https://reqres.in/api/users/9999');
+    const response = await request.get('https://reqres.in/api/users/9999', {
+      headers: API_HEADERS
+    });
     expect(response.status()).toBe(404);
   });
 
   test('PATCH /api/users/:id - Invalid Method', async ({ request }) => {
     const start = Date.now();
     const response = await request.patch('https://reqres.in/api/users/2', {
+      headers: API_HEADERS,
       data: { name: 'PatchNotAllowed' },
     });
     const duration = Date.now() - start;
-    // reqres.in may return 200, 404, or 405 for unsupported methods
     expect([200, 404, 405]).toContain(response.status());
     expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
   });
 
   test('POST /api/users - Malformed JSON', async ({ request }) => {
     const start = Date.now();
-    // Send invalid JSON by using a string instead of an object
     const response = await request.fetch('https://reqres.in/api/users', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      data: "{ name: 'MissingQuotes }", // Invalid JSON
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'reqres-free-v1'
+      },
+      data: "{ name: 'MissingQuotes }",
     });
     const duration = Date.now() - start;
-    // reqres.in may return 400, 415, or 500 for malformed JSON
     expect([400, 415, 500]).toContain(response.status());
     expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
   });
 
   // test('GET /api/invalid-endpoint - Invalid Endpoint', async ({ request }) => {
-  //   // Negative test: Accessing a non-existent endpoint should return 404
   //   const start = Date.now();
-  //   const response = await request.get('https://reqres.in/api/invalid-endpoint');
+  //   const response = await request.get('https://reqres.in/api/invalid-endpoint', {
+  //     headers: API_HEADERS
+  //   });
   //   const duration = Date.now() - start;
   //   expect(response.status()).toBe(404);
   //   expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
   // });
 
   // test('POST /api/users - Unsupported Media Type', async ({ request }) => {
-  //   // Negative test: Sending an unsupported media type (e.g., text/plain)
   //   const start = Date.now();
   //   const response = await request.post('https://reqres.in/api/users', {
-  //     headers: { 'Content-Type': 'application/gzip' },
+  //     headers: {
+  //       'Content-Type': 'application/gzip',
+  //       'x-api-key': 'reqres-free-v1'
+  //     },
   //     data: 'plain text body',
   //   });
   //   const duration = Date.now() - start;
-  //   // reqres.in may return 415 Unsupported Media Type or 400 Bad Request
   //   expect([400, 415]).toContain(response.status());
   //   expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
   // });
