@@ -19,6 +19,7 @@ const requiredEnvVars = [
   'ERROR_USER',
   'VISUAL_USER',
   'SAUCE_PASSWORD',
+  'SAUCE_USERNAME',
   'RESPONSE_TIME_THRESHOLD'
 ];
 

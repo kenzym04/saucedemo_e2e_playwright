@@ -18,6 +18,7 @@ jobs:
       VISUAL_USER: ${{ secrets.VISUAL_USER }}
       SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
       SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+      RESPONSE_TIME_THRESHOLD: ${{ secrets.RESPONSE_TIME_THRESHOLD }}
 
     steps:
       - name: Checkout repository
