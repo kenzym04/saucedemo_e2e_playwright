@@ -17,6 +17,7 @@ jobs:
       ERROR_USER: ${{ secrets.ERROR_USER }}
       VISUAL_USER: ${{ secrets.VISUAL_USER }}
       SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
+      SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
 
     steps:
       - name: Checkout repository

@@ -18,7 +18,8 @@ const requiredEnvVars = [
   'PERFORMANCE_USER',
   'ERROR_USER',
   'VISUAL_USER',
-  'SAUCE_PASSWORD'
+  'SAUCE_PASSWORD',
+  'RESPONSE_TIME_THRESHOLD'
 ];
 
 for (const key of requiredEnvVars) {
