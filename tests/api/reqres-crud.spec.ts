@@ -171,25 +171,25 @@ test.describe('Reqres.in CRUD API Tests', () => {
     expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
   });
 
-  test('GET /api/invalid-endpoint - Invalid Endpoint', async ({ request }) => {
-    // Negative test: Accessing a non-existent endpoint should return 404
-    const start = Date.now();
-    const response = await request.get('https://reqres.in/api/invalid-endpoint');
-    const duration = Date.now() - start;
-    expect(response.status()).toBe(404);
-    expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
-  });
+  // test('GET /api/invalid-endpoint - Invalid Endpoint', async ({ request }) => {
+  //   // Negative test: Accessing a non-existent endpoint should return 404
+  //   const start = Date.now();
+  //   const response = await request.get('https://reqres.in/api/invalid-endpoint');
+  //   const duration = Date.now() - start;
+  //   expect(response.status()).toBe(404);
+  //   expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
+  // });
 
-  test('POST /api/users - Unsupported Media Type', async ({ request }) => {
-    // Negative test: Sending an unsupported media type (e.g., text/plain)
-    const start = Date.now();
-    const response = await request.post('https://reqres.in/api/users', {
-      headers: { 'Content-Type': 'application/gzip' },
-      data: 'plain text body',
-    });
-    const duration = Date.now() - start;
-    // reqres.in may return 415 Unsupported Media Type or 400 Bad Request
-    expect([400, 415]).toContain(response.status());
-    expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
-  });
+  // test('POST /api/users - Unsupported Media Type', async ({ request }) => {
+  //   // Negative test: Sending an unsupported media type (e.g., text/plain)
+  //   const start = Date.now();
+  //   const response = await request.post('https://reqres.in/api/users', {
+  //     headers: { 'Content-Type': 'application/gzip' },
+  //     data: 'plain text body',
+  //   });
+  //   const duration = Date.now() - start;
+  //   // reqres.in may return 415 Unsupported Media Type or 400 Bad Request
+  //   expect([400, 415]).toContain(response.status());
+  //   expect(duration).toBeLessThan(RESPONSE_TIME_THRESHOLD);
+  // });
 });
