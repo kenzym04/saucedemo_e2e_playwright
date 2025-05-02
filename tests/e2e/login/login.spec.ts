@@ -11,6 +11,20 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+// Add debug logging
+console.log('Environment variables loaded:', {
+  STANDARD_USER: process.env.STANDARD_USER,
+  // Only log existence of other variables to avoid exposing sensitive data
+  LOCKED_USER: !!process.env.LOCKED_USER,
+  PROBLEM_USER: !!process.env.PROBLEM_USER,
+  PERFORMANCE_USER: !!process.env.PERFORMANCE_USER,
+  ERROR_USER: !!process.env.ERROR_USER,
+  VISUAL_USER: !!process.env.VISUAL_USER,
+  SAUCE_PASSWORD: !!process.env.SAUCE_PASSWORD,
+  SAUCE_USERNAME: !!process.env.SAUCE_USERNAME,
+  RESPONSE_TIME_THRESHOLD: process.env.RESPONSE_TIME_THRESHOLD
+});
+
 const requiredEnvVars = [
   'STANDARD_USER',
   'LOCKED_USER',

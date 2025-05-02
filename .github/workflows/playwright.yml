@@ -20,7 +20,7 @@ jobs:
       SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
       SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
       RESPONSE_TIME_THRESHOLD: ${{ secrets.RESPONSE_TIME_THRESHOLD }}
-
+      
     steps:
       - uses: actions/checkout@v4
       
@@ -31,6 +31,18 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+      
+      - name: Check environment variables
+        run: |
+          echo "Checking environment variables..."
+          for var in STANDARD_USER LOCKED_USER PROBLEM_USER PERFORMANCE_USER ERROR_USER VISUAL_USER SAUCE_PASSWORD SAUCE_USERNAME RESPONSE_TIME_THRESHOLD; do
+            if [ -n "${!var}" ]; then
+              echo "$var is set"
+            else
+              echo "$var is NOT set"
+            fi
+          done
+
       - name: Run Playwright tests
        
         run: npm test
